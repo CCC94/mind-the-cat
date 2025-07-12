@@ -1,18 +1,71 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const lastFedElement = document.getElementById('last-fed');
-    const feedButton = document.getElementById('feed-btn');
+import {
+    getAuth,
+    signInWithPopup,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // Load the last fed time from localStorage
-    const lastFedTime = localStorage.getItem('lastFedTime');
-    if (lastFedTime) {
-        lastFedElement.textContent = `Last fed: ${new Date(lastFedTime).toLocaleString()}`;
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
+
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const userInfo = document.getElementById("user-info");
+
+loginBtn.addEventListener("click", () => {
+    signInWithPopup(auth, provider).catch(console.error);
+});
+
+logoutBtn.addEventListener("click", () => {
+    signOut(auth);
+});
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        userInfo.textContent = `Logged in as ${user.displayName}`;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline";
+        window.currentUser = user;
+    } else {
+        userInfo.textContent = "";
+        loginBtn.style.display = "inline";
+        logoutBtn.style.display = "none";
+        window.currentUser = null;
     }
+});
+// This script handles user authentication using Firebase
+// It allows users to sign in with Google and displays their name
+// The login button is shown when the user is not authenticated
+// The logout button is shown when the user is authenticated
+// The user's information is displayed on the page
+// The script uses Firebase's authentication methods to manage user sessions
+// Ensure to include Firebase SDK in your HTML file for this to work
+// Example usage: <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+// Make sure to initialize Firebase with your project's configuration
+// This script should be included after the Firebase SDK scripts in your HTML file
+// Example usage: <script src="auth.js"></script>
 
-    // Add click event listener to the button
-    feedButton.addEventListener('click', () => {
-        const now = new Date();
-        localStorage.setItem('lastFedTime', now.toISOString());
-        lastFedElement.textContent = `Last fed: ${now.toLocaleString()}`;
+document.addEventListener('DOMContentLoaded', () => {
+    const chores = document.querySelectorAll('.chore');
+
+    chores.forEach((choreDiv) => {
+        const choreKey = choreDiv.dataset.chore;
+        const lastFedSpan = choreDiv.querySelector('.last-fed');
+        const button = choreDiv.querySelector('button');
+
+        // Load last time from localStorage
+        const savedTime = localStorage.getItem(`mind-the-cat-${choreKey}`);
+        if (savedTime) {
+            lastFedSpan.textContent = new Date(savedTime).toLocaleString();
+        }
+
+        // Button click
+        button.addEventListener('click', () => {
+            const now = new Date();
+            localStorage.setItem(`mind-the-cat-${choreKey}`, now.toISOString());
+            lastFedSpan.textContent = now.toLocaleString();
+        });
     });
 });
 // This script handles the feeding functionality and updates the last fed time

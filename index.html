@@ -11,10 +11,76 @@
 <body>
     <main>
         <h1>Mind the Cat 🐱</h1>
-        <p id="last-fed">Last fed: never</p>
-        <button id="feed-btn">Fed the Cat!</button>
+
+        <button id="login-btn">Sign in with Google</button>
+        <button id="logout-btn" style="display: none;">Log out</button>
+        <p id="user-info"></p>
+
+
+        <div class="chore" data-chore="feed">
+            <p>🐱 Feed the cat<br><span class="last-fed" id="last-fed-feed">Never</span></p>
+            <button data-chore-btn="feed">Done</button>
+        </div>
+
+        <div class="chore" data-chore="water">
+            <p>💧 Change the water<br><span class="last-fed" id="last-fed-water">Never</span></p>
+            <button data-chore-btn="water">Done</button>
+        </div>
+
+        <div class="chore" data-chore="litter">
+            <p>🧹 Clean the litter box<br><span class="last-fed" id="last-fed-litter">Never</span></p>
+            <button data-chore-btn="litter">Done</button>
+        </div>
+        <button id="test-firestore">Test Firestore Write</button>
     </main>
-    <script src="script.js"></script>
+
+    <!-- Firebase App + Firestore -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHpFshdCJ7eer8adXGp3pBoMcFs8TOhVU",
+            authDomain: "mindthecat-59b98.firebaseapp.com",
+            databaseURL: "https://mindthecat-59b98-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "mindthecat-59b98",
+            storageBucket: "mindthecat-59b98.firebasestorage.app",
+            messagingSenderId: "493425096678",
+            appId: "1:493425096678:web:6e59c43655f3abe20e0827"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Test Firestore write
+        document.getElementById("test-firestore").addEventListener("click", async () => {
+            const testRef = doc(db, "testCollection", "testDoc");
+            await setDoc(testRef, { hello: "world", timestamp: new Date().toISOString() });
+            console.log("✅ Test Firestore write from button succeeded!");
+        });
+
+        // Handle chore buttons
+        const chores = ["feed", "water", "litter"];
+        chores.forEach((choreKey) => {
+            const button = document.querySelector(`[data-chore-btn="${choreKey}"]`);
+            const span = document.getElementById(`last-fed-${choreKey}`);
+
+            // Load from localStorage
+            const saved = localStorage.getItem(`mind-the-cat-${choreKey}`);
+            if (saved) {
+                span.textContent = new Date(saved).toLocaleString();
+            }
+
+            button.addEventListener("click", () => {
+                const now = new Date();
+                localStorage.setItem(`mind-the-cat-${choreKey}`, now.toISOString());
+                span.textContent = now.toLocaleString();
+                console.log(`✅ Updated "${choreKey}" to ${now.toISOString()}`);
+            });
+        });
+    </script>
+
 </body>
+<script type="module" src="script.js"></script>
 
 </html>

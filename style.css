@@ -49,3 +49,30 @@ h1 {
 #feed-btn:hover {
     background-color: #fb8500;
 }
+
+.chore {
+    background: #f3f3f3;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.chore p {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.chore button {
+    background-color: #219ebc;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chore button:hover {
+    background-color: #126782;
+}
