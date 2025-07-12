@@ -10,36 +10,42 @@
 
 <body>
     <main>
-        <h1>Mind the Cat 🐱</h1>
-
-        <button id="login-btn">Sign in with Google</button>
-        <button id="logout-btn" style="display: none;">Log out</button>
-        <p id="user-info"></p>
-
-        <!-- Group setup -->
-        <div id="group-setup">
-            <input type="text" id="group-id-input" placeholder="Enter group ID" />
-            <button id="create-group-btn">Create Group</button>
-            <button id="join-group-btn">Join Group</button>
-            <p id="current-group-label">No group selected</p>
-        </div>
-        <div id="group-select-container">
-            <label for="group-select">Switch Group:</label>
-            <select id="group-select">
-                <option value="">-- Select a group --</option>
-            </select>
+        <!-- Login View -->
+        <div id="login-view" class="view">
+            <h1>Mind the Cat 🐱</h1>
+            <button id="login-btn">Sign in with Google</button>
         </div>
 
-        <!-- <div id="create-chore-form" style="margin-top: 20px;">
-            <input type="text" id="new-chore-name" placeholder="Enter chore name (e.g., vacuum)" />
-            <button id="create-chore-btn">Create Chore</button>
-        </div> -->
-        <div id="chore-creation">
-            <input type="text" id="new-chore-name" placeholder="Enter chore name" />
-            <button id="create-chore-btn">Create Chore</button>
+        <!-- Groups View -->
+        <div id="groups-view" class="view" style="display: none;">
+            <h2>Select or Create a Group</h2>
+            <button id="logout-btn">Log out</button>
+            <p id="user-info"></p>
+
+            <div id="group-setup">
+                <input type="text" id="group-id-input" placeholder="Enter group ID" />
+                <button id="create-group-btn">Create Group</button>
+                <button id="join-group-btn">Join Group</button>
+            </div>
+
+            <div id="group-list-container" style="margin-top: 20px;">
+                <h3>Your Groups:</h3>
+                <div id="group-list"></div>
+            </div>
         </div>
 
-        <button id="test-firestore">Test Firestore Write</button>
+        <!-- Chores View -->
+        <div id="chores-view" class="view" style="display: none;">
+            <h2>Chores for <span id="current-group-label">No group selected</span></h2>
+            <button id="back-to-groups">← Back to Groups</button>
+
+            <div id="chore-creation" style="margin-top: 20px;">
+                <input type="text" id="new-chore-name" placeholder="Enter chore name" />
+                <button id="create-chore-btn">Create Chore</button>
+            </div>
+
+            <div id="chore-list" style="margin-top: 20px;"></div>
+        </div>
     </main>
 
     <script type="module" src="auth.js"></script>

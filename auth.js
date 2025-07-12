@@ -1,5 +1,5 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCHpFshdCJ7eer8adXGp3pBoMcFs8TOhVU",
@@ -14,31 +14,41 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-document.getElementById("login-btn").addEventListener("click", () => {
-    signInWithPopup(auth, provider).catch((error) => {
-        console.error("Login error:", error);
+function showView(viewId) {
+    document.querySelectorAll(".view").forEach(div => {
+        div.style.display = div.id === viewId ? "block" : "none";
     });
+}
+
+document.getElementById("login-btn").addEventListener("click", () => {
+    signInWithPopup(auth, provider)
+        .then(result => {
+            const user = result.user;
+            window.currentUser = user;
+            document.dispatchEvent(new CustomEvent("user-ready", { detail: user }));
+        })
+        .catch(err => {
+            alert("Login failed: " + err.message);
+        });
 });
 
 document.getElementById("logout-btn").addEventListener("click", () => {
-    signOut(auth);
+    signOut(auth).then(() => {
+        showView("login-view");
+    });
 });
 
-onAuthStateChanged(auth, (user) => {
-    const loginBtn = document.getElementById("login-btn");
-    const logoutBtn = document.getElementById("logout-btn");
-    const userInfo = document.getElementById("user-info");
-
+onAuthStateChanged(auth, user => {
     if (user) {
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-        userInfo.textContent = `Logged in as ${user.displayName}`;
         window.currentUser = user;
         document.dispatchEvent(new CustomEvent("user-ready", { detail: user }));
     } else {
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-        userInfo.textContent = "";
-        window.currentUser = null;
+        showView("login-view");
     }
+});
+
+document.addEventListener("user-ready", e => {
+    const user = e.detail;
+    document.getElementById("user-info").textContent = `Logged in as ${user.displayName}`;
+    showView("groups-view");
 });
