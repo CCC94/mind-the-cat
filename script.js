@@ -1,80 +1,113 @@
 import {
-    getAuth,
-    signInWithPopup,
-    GoogleAuthProvider,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    onSnapshot,
+    collection,
+    addDoc,
+    query,
+    onSnapshot as listenCollection
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+const db = getFirestore();
 const auth = getAuth();
-const provider = new GoogleAuthProvider();
 
-const loginBtn = document.getElementById("login-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const userInfo = document.getElementById("user-info");
+// Create a chore inside the selected group
+async function createChore(groupId, choreName) {
+    const ref = doc(db, "groups", groupId, "chores", choreName);
+    await setDoc(ref, {
+        name: choreName,
+        lastDone: null,
+        doneBy: null
+    });
+    console.log(`✅ Created chore: ${choreName}`);
+}
 
-loginBtn.addEventListener("click", () => {
-    signInWithPopup(auth, provider).catch(console.error);
-});
+// Render a chore item to the DOM
+function renderChore(groupId, choreId, data) {
+    const choreList = document.getElementById("chore-list");
 
-logoutBtn.addEventListener("click", () => {
-    signOut(auth);
-});
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        userInfo.textContent = `Logged in as ${user.displayName}`;
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline";
-        window.currentUser = user;
-    } else {
-        userInfo.textContent = "";
-        loginBtn.style.display = "inline";
-        logoutBtn.style.display = "none";
-        window.currentUser = null;
+    let div = document.getElementById(`chore-${choreId}`);
+    if (!div) {
+        div = document.createElement("div");
+        div.className = "chore";
+        div.id = `chore-${choreId}`;
+        choreList.appendChild(div);
     }
-});
-// This script handles user authentication using Firebase
-// It allows users to sign in with Google and displays their name
-// The login button is shown when the user is not authenticated
-// The logout button is shown when the user is authenticated
-// The user's information is displayed on the page
-// The script uses Firebase's authentication methods to manage user sessions
-// Ensure to include Firebase SDK in your HTML file for this to work
-// Example usage: <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-// Make sure to initialize Firebase with your project's configuration
-// This script should be included after the Firebase SDK scripts in your HTML file
-// Example usage: <script src="auth.js"></script>
 
-document.addEventListener('DOMContentLoaded', () => {
-    const chores = document.querySelectorAll('.chore');
+    const lastDone = data.lastDone?.seconds
+        ? new Date(data.lastDone.seconds * 1000).toLocaleString()
+        : "Never";
 
-    chores.forEach((choreDiv) => {
-        const choreKey = choreDiv.dataset.chore;
-        const lastFedSpan = choreDiv.querySelector('.last-fed');
-        const button = choreDiv.querySelector('button');
+    const who = data.doneBy?.displayName || "Unknown";
 
-        // Load last time from localStorage
-        const savedTime = localStorage.getItem(`mind-the-cat-${choreKey}`);
-        if (savedTime) {
-            lastFedSpan.textContent = new Date(savedTime).toLocaleString();
-        }
+    div.innerHTML = `
+        <p>📝 ${choreId}<br/>
+        <span class="last-fed">Last done by ${who} at ${lastDone}</span></p>
+        <button data-chore-btn="${choreId}">Done</button>
+    `;
 
-        // Button click
-        button.addEventListener('click', () => {
-            const now = new Date();
-            localStorage.setItem(`mind-the-cat-${choreKey}`, now.toISOString());
-            lastFedSpan.textContent = now.toLocaleString();
+    div.querySelector("button").onclick = () => markChoreDone(groupId, choreId);
+}
+
+// Mark chore done
+async function markChoreDone(groupId, choreId) {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Sign in to mark chores.");
+        return;
+    }
+
+    const ref = doc(db, "groups", groupId, "chores", choreId);
+    await setDoc(ref, {
+        lastDone: new Date(),
+        doneBy: {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL || null,
+        },
+    }, { merge: true });
+
+    console.log(`🔄 ${choreId} marked done by ${user.displayName}`);
+}
+
+// Listen for all chores in a group
+function listenToChores(groupId) {
+    const q = collection(db, "groups", groupId, "chores");
+    return listenCollection(q, (snapshot) => {
+        document.getElementById("chore-list").innerHTML = ""; // clear existing
+        snapshot.forEach(doc => {
+            renderChore(groupId, doc.id, doc.data());
         });
     });
+}
+
+// When group is ready, start listening
+document.addEventListener("group-ready", (event) => {
+    const groupId = event.detail;
+    listenToChores(groupId);
 });
-// This script handles the feeding functionality and updates the last fed time
-// It uses localStorage to persist the last fed time across page reloads
-// The last fed time is displayed in a human-readable format
-// The button click updates the last fed time and saves it to localStorage
-// The script runs when the DOM is fully loaded to ensure all elements are available
-// This is a simple implementation for a pet feeding tracker
-// It can be extended with more features like feeding history or reminders
-// Ensure to include this script in your HTML file for it to work
-// Example usage: <script src="script.js"></script>
-// Make sure to test the functionality in a browser that supports localStorage
+
+// Handle chore creation
+document.getElementById("create-chore-btn").addEventListener("click", () => {
+    const choreName = document.getElementById("new-chore-name").value.trim();
+    const groupId = localStorage.getItem("groupId");
+    if (!choreName || !groupId) {
+        alert("Enter a chore name and select a group first.");
+        return;
+    }
+
+    createChore(groupId, choreName);
+    document.getElementById("new-chore-name").value = "";
+});
+
+// Auto-load saved group on page load
+window.addEventListener("load", () => {
+    const savedGroupId = localStorage.getItem("groupId");
+    if (savedGroupId) {
+        document.dispatchEvent(new CustomEvent("group-ready", { detail: savedGroupId }));
+        document.getElementById("current-group-label").textContent = `Group: ${savedGroupId}`;
+    }
+});
