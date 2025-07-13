@@ -1,0 +1,18 @@
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCHpFshdCJ7eer8adXGp3pBoMcFs8TOhVU",
+
+  authDomain: "mindthecat-59b98.firebaseapp.com",
+
+  databaseURL: "https://mindthecat-59b98-default-rtdb.europe-west1.firebasedatabase.app",
+
+  projectId: "mindthecat-59b98",
+
+  storageBucket: "mindthecat-59b98.firebasestorage.app",
+
+  messagingSenderId: "493425096678",
+
+  appId: "1:493425096678:web:6e59c43655f3abe20e0827"
+
+};
+

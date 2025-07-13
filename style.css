@@ -1,51 +1,333 @@
-/* Reset default margins and set background */
+/**
+ * Mind the Cat - Stylesheet
+ * 
+ * This file contains all the styling for the Mind the Cat chore tracking application.
+ * It uses a warm, friendly color scheme with good contrast and accessibility.
+ * 
+ * Color Palette:
+ * - Primary: #ffb703 (warm yellow)
+ * - Secondary: #fb8500 (orange)
+ * - Background: #fef6e4 (cream)
+ * - Text: #001858 (dark blue)
+ * - Accent: #219ebc (blue)
+ */
+
+/* ==========================================================================
+   RESET AND BASE LAYOUT
+   ========================================================================== */
+
+/* Reset default margins and set up the main layout */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
     background-color: #fef6e4;
+    /* Warm cream background */
     color: #001858;
+    /* Dark blue text for good contrast */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    /* Full viewport height */
 }
 
-/* Main card layout */
+/* Main container with card-like appearance */
 main {
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
     text-align: center;
     width: 90%;
     max-width: 400px;
+    /* Responsive but not too wide */
 }
 
-/* Title styling */
+/* ==========================================================================
+   TYPOGRAPHY
+   ========================================================================== */
+
+/* Main heading styling */
 h1 {
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
 }
 
-/* Paragraph for last-fed info */
-#last-fed {
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
+/* Labels for group and user information */
+#current-group-label,
+#user-info {
+    margin: 0.5rem 0;
+    font-weight: bold;
 }
 
-/* Button styling */
-#feed-btn {
-    background-color: #ffb703;
-    color: #fff;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
+/* ==========================================================================
+   FORM ELEMENTS AND INPUTS
+   ========================================================================== */
+
+/* Container spacing for form sections */
+#group-setup,
+#chore-creation {
+    margin: 1rem 0;
+}
+
+/* Group button styling (for group list items) */
+.group-button {
+    padding: 10px 15px;
     border: none;
-    border-radius: 12px;
+    background-color: #4CAF50;
+    /* Green for group selection */
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.group-button:hover {
+    background-color: #45a049;
+    /* Darker green on hover */
+}
+
+/* Input field styling */
+#group-setup input,
+#chore-creation input {
+    padding: 0.5rem;
+    width: 70%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   BUTTON STYLING
+   ========================================================================== */
+
+/* Primary action buttons (create, login, logout) */
+#group-setup button,
+#chore-creation button,
+#login-btn,
+#logout-btn {
+    background-color: #ffb703;
+    /* Primary yellow color */
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1rem;
+    margin: 0.3rem;
+    font-size: 1rem;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-#feed-btn:hover {
+/* Hover effect for primary buttons */
+#group-setup button:hover,
+#chore-creation button:hover,
+#login-btn:hover,
+#logout-btn:hover {
     background-color: #fb8500;
+    /* Darker orange on hover */
+}
+
+/* ==========================================================================
+   GROUP LIST STYLING
+   ========================================================================== */
+
+/* Container for the list of groups */
+#group-list {
+    margin-top: 1.5rem;
+    text-align: left;
+}
+
+/* Individual group card styling - exactly like chores */
+#group-list .group-entry {
+    background: #f3f3f3 !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+    border-radius: 12px !important;
+    border-left: 6px solid #4CAF50 !important;
+    transition: background 0.2s !important;
+    cursor: pointer !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    color: #001858 !important;
+    display: block !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    outline: none !important;
+    min-height: 60px !important;
+    line-height: 1.5 !important;
+}
+
+/* Group cards using chore styling with green border */
+#group-list .chore.group-entry {
+    border-left: 6px solid #4CAF50 !important;
+}
+
+/* Delete group button styling - matches chore button styling */
+#group-list .delete-group-btn {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
+    margin-top: 0.5rem !important;
+}
+
+#group-list .delete-group-btn:hover {
+    background-color: #c82333 !important;
+}
+
+/* Hover effect for group cards - exactly like chores */
+#group-list .group-entry:hover {
+    background: #eaeaea !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ==========================================================================
+   CHORE LIST STYLING
+   ========================================================================== */
+
+/* Container for the list of chores */
+#chore-list {
+    margin-top: 1.5rem;
+    text-align: left;
+    /* Left-align chore content */
+}
+
+/* Individual chore card styling */
+.chore {
+    background: #f3f3f3;
+    /* Light gray background */
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 12px;
+    border-left: 6px solid #ffb703;
+    /* Yellow accent border */
+    transition: background 0.2s;
+    /* Smooth hover transition */
+}
+
+/* Hover effect for chore cards */
+.chore:hover {
+    background: #eaeaea;
+    /* Slightly darker on hover */
+}
+
+/* Chore text content */
+.chore p {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   CHORE ACTION BUTTONS
+   ========================================================================== */
+
+/* Buttons within chore cards (Mark Done, Delete) */
+.chore button {
+    background-color: #219ebc;
+    /* Blue for action buttons */
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Hover effect for chore action buttons */
+.chore button:hover {
+    background-color: #126782;
+    /* Darker blue on hover */
+}
+
+/* Overdue chore card */
+.overdue-chore {
+    border-left: 6px solid #dc3545 !important;
+    /* Red border */
+    background: #ffeaea !important;
+    /* Light red background */
+}
+
+/* Overdue group card */
+.overdue-group {
+    border-left: 6px solid #dc3545 !important;
+    /* Red border */
+    background: #ffeaea !important;
+    /* Light red background */
+}
+
+/* ==========================================================================
+   CHORE CARD LAYOUT
+   ========================================================================== */
+
+/* Chore header with name and dropdown toggle */
+.chore-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.chore-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.chore-dropdown-toggle {
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #666;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.chore-dropdown-toggle:hover {
+    background-color: #e0e0e0;
+}
+
+/* Main chore information */
+.chore-main-info {
+    margin-bottom: 0.5rem;
+}
+
+/* Detailed information (hidden by default) */
+.chore-details {
+    background-color: #f8f8f8;
+    padding: 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #ddd;
+}
+
+/* Chore action buttons container */
+.chore-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Update existing chore button styles to work with new layout */
+.chore-actions button {
+    background-color: #219ebc;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chore-actions button:hover {
+    background-color: #126782;
 }
