@@ -1,6 +1,6 @@
 {
     "name": "Mind the Cat",
-    "short_name": "MindCat",
+    "short_name": "MindTheCat",
     "description": "Chore tracking for shared living spaces.",
     "start_url": "/",
     "display": "standalone",
