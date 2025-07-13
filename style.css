@@ -2,15 +2,153 @@
  * Mind the Cat - Stylesheet
  * 
  * This file contains all the styling for the Mind the Cat chore tracking application.
- * It uses a warm, friendly color scheme with good contrast and accessibility.
+ * It uses a calming sky blue centered pastel color scheme designed to reduce stress and promote tranquility.
  * 
  * Color Palette:
- * - Primary: #ffb703 (warm yellow)
- * - Secondary: #fb8500 (orange)
- * - Background: #fef6e4 (cream)
- * - Text: #001858 (dark blue)
- * - Accent: #219ebc (blue)
+ * - Primary: #D4F6FF (sky blue) - main color
+ * - Background: #E8F9FF (light sky) - backgrounds
+ * - Secondary: #A8E6CF (mint green) - secondary elements
+ * - Accent: #FFB7B2 (soft coral) - accents and warnings
+ * - Text: #6B7A8F (dusty blue) - readable text
  */
+
+/* ==========================================================================
+   SPLASH SCREEN
+   ========================================================================== */
+
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #D4F6FF 0%, #E8F9FF 50%, #A8E6CF 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.splash-screen.fade-out {
+    opacity: 0;
+}
+
+.splash-content {
+    text-align: center;
+    animation: splashPulse 2s ease-in-out infinite;
+}
+
+.splash-icon {
+    width: 180px;
+    height: 180px;
+    border-radius: 36px;
+    box-shadow: 0 12px 48px rgba(212, 246, 255, 0.4);
+    margin-bottom: 1.5rem;
+    animation: splashIconFloat 3s ease-in-out infinite;
+}
+
+.splash-title {
+    color: #6B7A8F;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 3px 6px rgba(107, 122, 143, 0.15);
+}
+
+/* Splash screen animations */
+@keyframes splashPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes splashIconFloat {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Hide splash screen after animation */
+.splash-screen.hidden {
+    display: none;
+}
+
+/* ==========================================================================
+   LOGIN VIEW STYLING
+   ========================================================================== */
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-icon {
+    width: 200px;
+    height: 200px;
+    border-radius: 40px;
+    box-shadow: 0 8px 32px rgba(212, 246, 255, 0.4);
+    margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   MEMBERS LIST STYLING
+   ========================================================================== */
+
+#member-list {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(212, 246, 255, 0.1);
+    border-radius: 12px;
+    border: 1px solid #E8F9FF;
+}
+
+#member-list h3 {
+    color: #6B7A8F;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+#member-list-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#member-list-ul li {
+    padding: 0.8rem;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid #D4F6FF;
+    font-size: 0.95rem;
+    color: #6B7A8F;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#member-list-ul li:hover {
+    background: #E8F9FF;
+    transform: translateX(4px);
+}
 
 /* ==========================================================================
    RESET AND BASE LAYOUT
@@ -20,11 +158,11 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #fef6e4;
-    /* Warm cream background */
-    color: #001858;
-    /* Dark blue text for good contrast */
+    font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #E8F9FF;
+    /* Light sky background */
+    color: #6B7A8F;
+    /* Dusty blue text for good contrast */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,8 +175,8 @@ main {
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    /* Subtle shadow for depth */
+    box-shadow: 0 4px 12px rgba(212, 246, 255, 0.3);
+    /* Sky blue shadow */
     text-align: center;
     width: 90%;
     max-width: 400px;
@@ -53,6 +191,8 @@ main {
 h1 {
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
+    color: #6B7A8F;
+    /* Dusty blue for headings */
 }
 
 /* Labels for group and user information */
@@ -60,6 +200,7 @@ h1 {
 #user-info {
     margin: 0.5rem 0;
     font-weight: bold;
+    color: #6B7A8F;
 }
 
 /* ==========================================================================
@@ -76,8 +217,8 @@ h1 {
 .group-button {
     padding: 10px 15px;
     border: none;
-    background-color: #4CAF50;
-    /* Green for group selection */
+    background-color: #D4F6FF;
+    /* Sky blue for group selection */
     color: white;
     border-radius: 8px;
     cursor: pointer;
@@ -86,8 +227,8 @@ h1 {
 }
 
 .group-button:hover {
-    background-color: #45a049;
-    /* Darker green on hover */
+    background-color: #A8E6CF;
+    /* Mint green on hover */
 }
 
 /* Input field styling */
@@ -96,8 +237,10 @@ h1 {
     padding: 0.5rem;
     width: 70%;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #D4F6FF;
     margin-bottom: 0.5rem;
+    background-color: #E8F9FF;
+    /* Light sky background */
 }
 
 /* ==========================================================================
@@ -109,9 +252,9 @@ h1 {
 #chore-creation button,
 #login-btn,
 #logout-btn {
-    background-color: #ffb703;
-    /* Primary yellow color */
-    color: #fff;
+    background-color: #D4F6FF;
+    /* Sky blue primary color */
+    color: #6B7A8F;
     border: none;
     padding: 0.6rem 1rem;
     margin: 0.3rem;
@@ -126,8 +269,8 @@ h1 {
 #chore-creation button:hover,
 #login-btn:hover,
 #logout-btn:hover {
-    background-color: #fb8500;
-    /* Darker orange on hover */
+    background-color: #A8E6CF;
+    /* Mint green on hover */
 }
 
 /* ==========================================================================
@@ -140,36 +283,122 @@ h1 {
     text-align: left;
 }
 
+/* Group header with name and overdue badge */
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.group-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #6B7A8F;
+}
+
+.overdue-badge {
+    background: #FFB7B2;
+    color: #6B7A8F;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    animation: pulse-overdue 2s infinite;
+}
+
+.group-info {
+    margin-bottom: 0.5rem;
+}
+
+.group-role {
+    font-size: 0.9rem;
+    color: #6B7A8F;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.group-stats {
+    margin-bottom: 0.5rem;
+}
+
+.chore-count {
+    font-size: 0.9rem;
+    color: #6B7A8F;
+    font-weight: 600;
+}
+
+.urgent-chore-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(212, 246, 255, 0.2);
+    border-radius: 8px;
+    border-left: 3px solid #D4F6FF;
+    margin-top: 0.5rem;
+}
+
+.urgent-chore-info.no-chores {
+    background: rgba(168, 230, 207, 0.2);
+    border-left-color: #A8E6CF;
+}
+
+.urgent-chore-info.no-urgent {
+    background: rgba(255, 183, 178, 0.2);
+    border-left-color: #FFB7B2;
+}
+
+.urgency-indicator {
+    font-size: 1rem;
+}
+
+.urgent-chore-name {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6B7A8F;
+}
+
+.urgency-percent {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #6B7A8F;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
 /* Individual group card styling - exactly like chores */
 #group-list .group-entry {
-    background: #f3f3f3 !important;
-    padding: 1rem !important;
+    background: #ffffff !important;
+    padding: 1.2rem !important;
     margin: 1rem 0 !important;
-    border-radius: 12px !important;
-    border-left: 6px solid #4CAF50 !important;
-    transition: background 0.2s !important;
+    border-radius: 16px !important;
+    border-left: 6px solid #D4F6FF !important;
+    transition: all 0.3s ease !important;
     cursor: pointer !important;
     font-size: 1rem !important;
     font-weight: 500 !important;
-    color: #001858 !important;
+    color: #6B7A8F !important;
     display: block !important;
     text-decoration: none !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    border: none !important;
+    box-shadow: 0 4px 12px rgba(212, 246, 255, 0.2) !important;
+    border: 1px solid #E8F9FF !important;
     outline: none !important;
-    min-height: 60px !important;
+    min-height: 80px !important;
     line-height: 1.5 !important;
 }
 
-/* Group cards using chore styling with green border */
+/* Group cards using chore styling with sky blue border */
 #group-list .chore.group-entry {
-    border-left: 6px solid #4CAF50 !important;
+    border-left: 6px solid #D4F6FF !important;
 }
 
 /* Delete group button styling - matches chore button styling */
 #group-list .delete-group-btn {
-    background-color: #dc3545 !important;
-    color: white !important;
+    background-color: #FFB7B2 !important;
+    color: #6B7A8F !important;
     border: none !important;
     padding: 0.6rem 1rem !important;
     font-size: 1rem !important;
@@ -180,14 +409,16 @@ h1 {
 }
 
 #group-list .delete-group-btn:hover {
-    background-color: #c82333 !important;
+    background-color: #FFB7B2 !important;
+    opacity: 0.8;
 }
 
 /* Hover effect for group cards - exactly like chores */
 #group-list .group-entry:hover {
-    background: #eaeaea !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    background: #E8F9FF !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px rgba(212, 246, 255, 0.3) !important;
+    border-color: #D4F6FF !important;
 }
 
 /* ==========================================================================
@@ -203,21 +434,21 @@ h1 {
 
 /* Individual chore card styling */
 .chore {
-    background: #f3f3f3;
-    /* Light gray background */
+    background: #E8F9FF;
+    /* Light sky background */
     padding: 1rem;
     margin: 1rem 0;
     border-radius: 12px;
-    border-left: 6px solid #ffb703;
-    /* Yellow accent border */
+    border-left: 6px solid #D4F6FF;
+    /* Sky blue accent border */
     transition: background 0.2s;
     /* Smooth hover transition */
 }
 
 /* Hover effect for chore cards */
 .chore:hover {
-    background: #eaeaea;
-    /* Slightly darker on hover */
+    background: rgba(212, 246, 255, 0.3);
+    /* Slightly more sky blue tint on hover */
 }
 
 /* Chore text content */
@@ -232,9 +463,9 @@ h1 {
 
 /* Buttons within chore cards (Mark Done, Delete) */
 .chore button {
-    background-color: #219ebc;
-    /* Blue for action buttons */
-    color: white;
+    background-color: #A8E6CF;
+    /* Mint green for action buttons */
+    color: #6B7A8F;
     border: none;
     padding: 0.6rem 1rem;
     font-size: 1rem;
@@ -245,24 +476,77 @@ h1 {
 
 /* Hover effect for chore action buttons */
 .chore button:hover {
-    background-color: #126782;
-    /* Darker blue on hover */
+    background-color: #D4F6FF;
+    /* Sky blue on hover */
 }
 
 /* Overdue chore card */
 .overdue-chore {
-    border-left: 6px solid #dc3545 !important;
-    /* Red border */
-    background: #ffeaea !important;
-    /* Light red background */
+    border-left: 6px solid #FFB7B2 !important;
+    /* Soft coral border */
+    background: linear-gradient(135deg, #E8F9FF 0%, #FFB7B2 100%) !important;
+    /* Gradient sky to coral background */
+    box-shadow: 0 4px 12px rgba(255, 183, 178, 0.3) !important;
+    /* Soft coral shadow */
+    animation: pulse-overdue 2s infinite !important;
+    /* Pulsing animation */
+    position: relative !important;
+}
+
+.overdue-chore::before {
+    content: "⚠️ OVERDUE" !important;
+    position: absolute !important;
+    top: -8px !important;
+    right: 10px !important;
+    background: #FFB7B2 !important;
+    color: #6B7A8F !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.7rem !important;
+    font-weight: bold !important;
+    z-index: 1 !important;
 }
 
 /* Overdue group card */
 .overdue-group {
-    border-left: 6px solid #dc3545 !important;
-    /* Red border */
-    background: #ffeaea !important;
-    /* Light red background */
+    border-left: 6px solid #FFB7B2 !important;
+    /* Soft coral border */
+    background: linear-gradient(135deg, #E8F9FF 0%, #FFB7B2 100%) !important;
+    /* Gradient sky to coral background */
+    box-shadow: 0 4px 12px rgba(255, 183, 178, 0.3) !important;
+    /* Soft coral shadow */
+    animation: pulse-overdue 2s infinite !important;
+    /* Pulsing animation */
+    position: relative !important;
+}
+
+.overdue-group::before {
+    content: "⚠️ OVERDUE" !important;
+    position: absolute !important;
+    top: -8px !important;
+    right: 10px !important;
+    background: #FFB7B2 !important;
+    color: #6B7A8F !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.7rem !important;
+    font-weight: bold !important;
+    z-index: 1 !important;
+}
+
+/* Pulsing animation for overdue items */
+@keyframes pulse-overdue {
+    0% {
+        box-shadow: 0 4px 12px rgba(255, 183, 178, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 4px 20px rgba(255, 183, 178, 0.5);
+    }
+
+    100% {
+        box-shadow: 0 4px 12px rgba(255, 183, 178, 0.3);
+    }
 }
 
 /* ==========================================================================
@@ -280,19 +564,20 @@ h1 {
 .chore-name {
     font-weight: bold;
     font-size: 1.1rem;
+    color: #6B7A8F;
 }
 
 .chore-dropdown-toggle {
     cursor: pointer;
     font-size: 0.8rem;
-    color: #666;
+    color: #6B7A8F;
     padding: 2px 6px;
     border-radius: 3px;
     transition: background-color 0.2s;
 }
 
 .chore-dropdown-toggle:hover {
-    background-color: #e0e0e0;
+    background-color: rgba(212, 246, 255, 0.3);
 }
 
 /* Main chore information */
@@ -302,11 +587,11 @@ h1 {
 
 /* Detailed information (hidden by default) */
 .chore-details {
-    background-color: #f8f8f8;
+    background-color: rgba(212, 246, 255, 0.2);
     padding: 0.5rem;
     border-radius: 6px;
     margin-bottom: 0.5rem;
-    border-left: 3px solid #ddd;
+    border-left: 3px solid #D4F6FF;
 }
 
 /* Chore action buttons container */
@@ -318,8 +603,8 @@ h1 {
 
 /* Update existing chore button styles to work with new layout */
 .chore-actions button {
-    background-color: #219ebc;
-    color: white;
+    background-color: #A8E6CF;
+    color: #6B7A8F;
     border: none;
     padding: 0.6rem 1rem;
     font-size: 1rem;
@@ -329,5 +614,759 @@ h1 {
 }
 
 .chore-actions button:hover {
-    background-color: #126782;
+    background-color: #D4F6FF;
 }
+
+/* Overdue text styling */
+.overdue-chore .chore-name {
+    color: #FFB7B2 !important;
+    font-weight: bold !important;
+}
+
+.overdue-chore .chore-main-info small {
+    color: #FFB7B2 !important;
+    font-weight: 500 !important;
+}
+
+/* Overdue group text styling */
+.overdue-group p {
+    color: #FFB7B2 !important;
+    font-weight: bold !important;
+}
+
+/* Enhanced hover effect for overdue items */
+.overdue-chore:hover {
+    background: linear-gradient(135deg, #FFB7B2 0%, #E8F9FF 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255, 183, 178, 0.4) !important;
+}
+
+.overdue-group:hover {
+    background: linear-gradient(135deg, #FFB7B2 0%, #E8F9FF 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255, 183, 178, 0.4) !important;
+}
+
+/* ==========================================================================
+   DELETE GROUP SECTION
+   ========================================================================== */
+
+/* Delete group section styling */
+#delete-group-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #E8F9FF;
+    text-align: center;
+    display: none;
+    /* Hidden by default, shown only for admins */
+}
+
+#delete-group-btn {
+    background-color: #FFB7B2;
+    color: #6B7A8F;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#delete-group-btn:hover {
+    background-color: rgba(255, 183, 178, 0.8);
+}
+
+/* ==========================================================================
+   PROGRESS BAR STYLING
+   ========================================================================== */
+
+/* Progress bar container */
+.progress-container {
+    margin: 8px 0;
+    background-color: #E8F9FF;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 8px;
+    position: relative;
+}
+
+/* Progress bar fill - now shows remaining time */
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+}
+
+/* Progress bar colors based on urgency (remaining time) */
+.progress-fill.urgent {
+    background: linear-gradient(90deg, #FFB7B2, #E8F9FF);
+}
+
+.progress-fill.warning {
+    background: linear-gradient(90deg, #D4F6FF, #A8E6CF);
+}
+
+.progress-fill.good {
+    background: linear-gradient(90deg, #A8E6CF, #D4F6FF);
+}
+
+/* Progress text */
+.progress-text {
+    font-size: 0.8rem;
+    color: #6B7A8F;
+    margin-top: 4px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Overdue progress bar */
+.overdue-chore .progress-container {
+    background-color: #E8F9FF;
+}
+
+.overdue-chore .progress-fill {
+    background: linear-gradient(90deg, #FFB7B2, #E8F9FF);
+    width: 0% !important;
+    animation: pulse-empty 2s infinite;
+}
+
+.overdue-chore .progress-text {
+    color: #FFB7B2;
+    font-weight: bold;
+}
+
+/* Animation for empty progress bar (overdue) */
+@keyframes pulse-empty {
+    0% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+}
+
+/* ==========================================================================
+   GROUPS VIEW LAYOUT
+   ========================================================================== */
+
+/* Groups view main styling */
+#groups-view {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+#user-info {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #6B7A8F;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+/* Group list container - centered and prominent */
+#group-list-container {
+    margin: 2rem 0;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#group-list {
+    margin-top: 1.5rem;
+    text-align: left;
+}
+
+/* Action buttons styling */
+#group-actions {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.action-btn {
+    padding: 0.8rem 1.5rem;
+    margin: 0 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.action-btn.primary {
+    background-color: #D4F6FF;
+    color: #6B7A8F;
+}
+
+.action-btn.primary:hover {
+    background-color: #A8E6CF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 246, 255, 0.3);
+}
+
+.action-btn.secondary {
+    background-color: #A8E6CF;
+    color: #6B7A8F;
+}
+
+.action-btn.secondary:hover {
+    background-color: #D4F6FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+}
+
+/* Join code section */
+#join-code-section {
+    text-align: center;
+    padding: 1rem;
+    background: #E8F9FF;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+#join-code-section input {
+    padding: 0.6rem;
+    border: 1px solid #D4F6FF;
+    border-radius: 8px;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background-color: white;
+}
+
+#join-code-section button {
+    padding: 0.6rem 1rem;
+    margin: 0 0.25rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#join-code-btn {
+    background-color: #D4F6FF;
+    color: #6B7A8F;
+}
+
+#cancel-join-btn {
+    background-color: #A8E6CF;
+    color: #6B7A8F;
+}
+
+/* Logout section */
+#logout-section {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E8F9FF;
+}
+
+#logout-btn {
+    background-color: #A8E6CF;
+    color: #6B7A8F;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#logout-btn:hover {
+    background-color: #D4F6FF;
+}
+
+/* ==========================================================================
+   CREATE GROUP VIEW
+   ========================================================================== */
+
+#group-creation-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #6B7A8F;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #D4F6FF;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: #E8F9FF;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 0.5rem;
+    color: #6B7A8F;
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.form-actions button {
+    padding: 0.8rem 1.5rem;
+    margin: 0 0.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.form-actions button.primary {
+    background-color: #D4F6FF;
+    color: #6B7A8F;
+}
+
+.form-actions button.primary:hover {
+    background-color: #A8E6CF;
+}
+
+.form-actions button.secondary {
+    background-color: #A8E6CF;
+    color: #6B7A8F;
+}
+
+.form-actions button.secondary:hover {
+    background-color: #D4F6FF;
+}
+
+/* ==========================================================================
+   CHORE ACTIONS
+   ========================================================================== */
+
+/* Chore actions section */
+#chore-actions {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+/* ==========================================================================
+   CREATE CHORE VIEW
+   ========================================================================== */
+
+#chore-creation-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.interval-inputs {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.interval-inputs input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #D4F6FF;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #E8F9FF;
+}
+
+.interval-inputs select {
+    padding: 0.8rem;
+    border: 1px solid #D4F6FF;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+}
+
+/* ==========================================================================
+   INVITE MEMBER VIEW
+   ========================================================================== */
+
+#invite-member-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+#invite-member-form .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #6B7A8F;
+}
+
+#invite-member-form .form-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+/* ==========================================================================
+   SINGLE CHORE VIEW
+   ========================================================================== */
+
+#single-chore-view {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+#single-chore-view h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #6B7A8F;
+}
+
+#back-to-chores {
+    background-color: #A8E6CF;
+    color: #6B7A8F;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 2rem;
+}
+
+#back-to-chores:hover {
+    background-color: #D4F6FF;
+}
+
+.single-chore-details {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(212, 246, 255, 0.2);
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #E8F9FF;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.detail-section h3 {
+    color: #6B7A8F;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.detail-section p {
+    margin: 0.5rem 0;
+    color: #6B7A8F;
+    line-height: 1.5;
+}
+
+.detail-section strong {
+    color: #6B7A8F;
+}
+
+.primary-btn {
+    background-color: #D4F6FF;
+    color: #6B7A8F;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.primary-btn:hover {
+    background-color: #A8E6CF;
+}
+
+.secondary-btn {
+    background-color: #A8E6CF;
+    color: #6B7A8F;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+.secondary-btn:hover {
+    background-color: #D4F6FF;
+}
+
+/* History styling */
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #E8F9FF;
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+.history-entry {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    border-bottom: 1px solid #E8F9FF;
+    transition: background-color 0.2s;
+}
+
+.history-entry:last-child {
+    border-bottom: none;
+}
+
+.history-entry:hover {
+    background-color: rgba(212, 246, 255, 0.2);
+}
+
+.history-entry.latest {
+    background-color: rgba(212, 246, 255, 0.2);
+    border-left: 3px solid #D4F6FF;
+}
+
+/* Edit history entries */
+.history-entry.edit-entry {
+    border-left: 3px solid #FFB7B2;
+}
+
+.history-entry.edit-entry:hover {
+    background-color: rgba(255, 183, 178, 0.1);
+}
+
+.history-entry.edit-entry.latest {
+    background-color: rgba(255, 183, 178, 0.1);
+    border-left: 3px solid #FFB7B2;
+}
+
+/* Completion history entries */
+.history-entry.completion-entry {
+    border-left: 3px solid #D4F6FF;
+}
+
+.history-entry.completion-entry:hover {
+    background-color: rgba(212, 246, 255, 0.2);
+}
+
+.history-entry.completion-entry.latest {
+    background-color: rgba(212, 246, 255, 0.2);
+    border-left: 3px solid #D4F6FF;
+}
+
+.history-icon {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    color: #D4F6FF;
+}
+
+/* Edit icon styling */
+.history-entry.edit-entry .history-icon {
+    color: #FFB7B2;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-user {
+    font-weight: 500;
+    color: #6B7A8F;
+    margin-bottom: 0.2rem;
+}
+
+.history-action {
+    font-size: 0.9rem;
+    color: #6B7A8F;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.history-changes {
+    font-size: 0.85rem;
+    color: #6B7A8F;
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+    background-color: rgba(212, 246, 255, 0.1);
+    padding: 0.4rem;
+    border-radius: 4px;
+    border-left: 2px solid #D4F6FF;
+}
+
+.history-entry.edit-entry .history-changes {
+    background-color: rgba(255, 183, 178, 0.1);
+    border-left: 2px solid #FFB7B2;
+}
+
+.history-time {
+    font-size: 0.9rem;
+    color: #6B7A8F;
+}
+
+.relative-time {
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.full-time {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+#delete-chore-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E8F9FF;
+}
+
+#delete-chore-btn {
+    background-color: #FFB7B2;
+    color: #6B7A8F;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#delete-chore-btn:hover {
+    background-color: rgba(255, 183, 178, 0.8);
+}
+
+/* ==========================================================================
+   MODAL POPUP STYLING
+   ========================================================================== */
+
+/* Modal overlay */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(212, 246, 255, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content */
+.modal-content {
+    background-color: #ffffff;
+    margin: auto;
+    padding: 0;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    box-shadow: 0 8px 32px rgba(212, 246, 255, 0.4);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Modal header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    border-bottom: 1px solid #E8F9FF;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #6B7A8F;
+    font-size: 1.3rem;
+}
+
+/* Close button */
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6B7A8F;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background-color: #E8F9FF;
+    color: #6B7A8F;
+}
+
+/* Modal body */
+.modal-body {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Animation for modal */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive modal */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .modal-header {
+        padding: 1rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+}
+
+/* ==========================================================================
+   CHORE ACTIONS
+   ========================================================================== */

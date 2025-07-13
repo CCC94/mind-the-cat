@@ -6,19 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mind the Cat</title>
     <link rel="icon" type="image/png" href="icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#ffb703" />
 </head>
 
 <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <img src="icon-full-mindthecat.png" alt="Mind the Cat" class="splash-icon" />
+            <h1 class="splash-title">Mind the Cat</h1>
+        </div>
+    </div>
+
     <main>
         <!-- 
             LOGIN VIEW
             The initial view where users authenticate with Google
         -->
         <div id="login-view" class="view">
-            <h1>Mind the Cat 🐱</h1>
+            <div class="login-header">
+                <img src="icon-full-mindthecat.png" alt="Mind the Cat" class="login-icon" />
+            </div>
             <button id="login-btn">Sign in with Google</button>
         </div>
 
@@ -27,31 +41,52 @@
             Displayed after login, shows user's groups and allows group creation/joining
         -->
         <div id="groups-view" class="view" style="display: none;">
-            <h2>Select or Create a Group</h2>
-
-            <!-- User controls -->
-            <button id="logout-btn">Log out</button>
+            <!-- User info at top -->
             <p id="user-info"></p>
 
-            <!-- Group creation and joining interface -->
-            <div id="group-setup">
-                <input type="text" id="group-id-input" placeholder="Enter group ID" />
-                <button id="create-group-btn">Create Group</button>
-                <button id="join-group-btn">Join Group</button>
-            </div>
-
-            <!-- Join group by code -->
-            <div id="join-code-section" style="margin-top: 1rem;">
-                <input type="text" id="join-code-input" placeholder="Enter invite code" />
-                <button id="join-code-btn">Join Group by Code</button>
-            </div>
-
-            <!-- List of user's existing groups -->
-            <div id="group-list-container" style="margin-top: 20px;">
-                <h3>Your Groups:</h3>
+            <!-- List of user's existing groups - CENTERED AND PROMINENT -->
+            <div id="group-list-container">
                 <div id="group-list">
-                    <!-- Test group card to verify styling -->
-                    <div class="group-entry" style="display: none;">Test Group Card</div>
+                    <!-- Groups will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Action buttons below groups -->
+            <div id="group-actions" style="margin-top: 2rem;">
+                <button id="create-group-btn" class="action-btn primary">➕ Create New Group</button>
+                <button id="join-group-btn" class="action-btn secondary">🔗 Join Group</button>
+            </div>
+
+            <!-- Join group by code section (hidden by default) -->
+            <div id="join-code-section" style="margin-top: 1rem; display: none;">
+                <input type="text" id="join-code-input" placeholder="Enter 8-character invite code" maxlength="8" />
+                <button id="join-code-btn">Join Group</button>
+                <button id="cancel-join-btn">Cancel</button>
+            </div>
+
+            <!-- Logout at bottom -->
+            <div id="logout-section" style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #ddd;">
+                <button id="logout-btn">Log out</button>
+            </div>
+        </div>
+
+        <!-- 
+            CREATE GROUP VIEW
+            Dedicated view for creating new groups
+        -->
+        <div id="create-group-view" class="view" style="display: none;">
+            <h2>Create New Group</h2>
+
+            <div id="group-creation-form">
+                <div class="form-group">
+                    <label for="new-group-id-input">Group Name</label>
+                    <input type="text" id="new-group-id-input" placeholder="Enter group name" />
+                    <small>This will be the name of your group</small>
+                </div>
+
+                <div class="form-actions">
+                    <button id="confirm-create-group-btn" class="primary">Create Group</button>
+                    <button id="cancel-create-group-btn" class="secondary">Cancel</button>
                 </div>
             </div>
         </div>
@@ -64,39 +99,154 @@
             <h2>Chores for <span id="current-group-label">No group selected</span></h2>
 
             <!-- Navigation back to groups -->
-            <button id="back-to-groups">← Back to Groups</button>
+            <button id="back-to-groups" class="action-btn secondary">🏠 All Groups</button>
 
-            <!-- Chore creation interface -->
-            <div id="chore-creation" style="margin-top: 20px;">
-                <input type="text" id="new-chore-name" placeholder="Enter chore name" />
-                <input type="number" id="chore-interval-value" min="1" placeholder="Interval"
-                    style="width: 70px; margin-left: 8px;" />
-                <select id="chore-interval-unit" style="margin-left: 4px;">
-                    <option value="minutes">minutes</option>
-                    <option value="hours">hours</option>
-                    <option value="days">days</option>
-                </select>
-                <button id="create-chore-btn">Create Chore</button>
-            </div>
+            <!-- Chores list - PROMINENT AND FIRST -->
+            <div id="chore-list" style="margin-top: 2rem;"></div>
 
-            <!-- Member invitation interface (admin only) -->
-            <div id="invite-member" style="margin-top: 30px; display: none;">
-                <h3>Invite Member</h3>
-                <input type="text" id="invite-user-id" placeholder="User Email (Google Account)" />
-                <label><input type="checkbox" id="invite-as-admin" /> Admin</label>
-                <button id="invite-btn">Invite</button>
-                <hr style="margin: 1rem 0;">
-                <button id="generate-invite-code-btn">Generate Invite Code</button>
+            <!-- Action buttons below chores -->
+            <div id="chore-actions" style="margin-top: 2rem;">
+                <button id="create-chore-btn" class="action-btn primary">➕ Create New Chore</button>
+                <button id="invite-member-btn" class="action-btn secondary">👥 Invite Member</button>
             </div>
 
             <!-- Group members list -->
-            <div id="member-list" style="margin-top: 30px;">
+            <div id="member-list" style="margin-top: 2rem;">
                 <h3>Members</h3>
                 <ul id="member-list-ul"></ul>
             </div>
 
-            <!-- Chores list - dynamically populated -->
-            <div id="chore-list" style="margin-top: 20px;"></div>
+            <!-- Delete group button (admin only) -->
+            <div id="delete-group-section">
+                <button id="delete-group-btn">🗑️ Delete Group</button>
+            </div>
+        </div>
+
+        <!-- 
+            SINGLE CHORE VIEW
+            Detailed view for a specific chore with history
+        -->
+        <div id="single-chore-view" class="view" style="display: none;">
+            <h2 id="single-chore-name">Chore Details</h2>
+
+            <!-- Navigation back to chores -->
+            <button id="back-to-chores">← Back to Chores</button>
+
+            <div id="single-chore-content">
+                <!-- Chore details will be dynamically populated here -->
+            </div>
+
+            <div class="detail-section">
+                <h3>Actions</h3>
+                <button id="mark-done-single-btn" class="primary-btn">Mark as Done</button>
+                <button id="edit-chore-btn" class="secondary-btn">✏️ Edit Chore</button>
+                <button id="view-history-btn" class="secondary-btn">📋 View History</button>
+            </div>
+
+            <!-- Delete chore button (admin only) -->
+            <div id="delete-chore-section" style="margin-top: 2rem; text-align: center;">
+                <button id="delete-chore-btn"
+                    style="background-color: #dc3545; color: white; border: none; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 8px; cursor: pointer;">🗑️
+                    Delete Chore</button>
+            </div>
+        </div>
+
+        <!-- 
+            EDIT CHORE VIEW
+            Dedicated view for editing existing chores
+        -->
+        <div id="edit-chore-view" class="view" style="display: none;">
+            <h2>Edit Chore</h2>
+
+            <!-- Navigation back to single chore view -->
+            <button id="back-to-single-chore">← Back to Chore</button>
+
+            <div id="edit-chore-form">
+                <div class="form-group">
+                    <label for="edit-chore-name-input">Chore Name</label>
+                    <input type="text" id="edit-chore-name-input" placeholder="Enter chore name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-chore-interval-value-input">Time Interval (Optional)</label>
+                    <div class="interval-inputs">
+                        <input type="number" id="edit-chore-interval-value-input" min="1" placeholder="Interval" />
+                        <select id="edit-chore-interval-unit-input">
+                            <option value="minutes">minutes</option>
+                            <option value="hours">hours</option>
+                            <option value="days">days</option>
+                        </select>
+                    </div>
+                    <small>Leave empty for no time requirement</small>
+                </div>
+
+                <div class="form-actions">
+                    <button id="confirm-edit-chore-btn" class="primary">Save Changes</button>
+                    <button id="cancel-edit-chore-btn" class="secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 
+            CREATE CHORE VIEW
+            Dedicated view for creating new chores
+        -->
+        <div id="create-chore-view" class="view" style="display: none;">
+            <h2>Create New Chore</h2>
+
+            <div id="chore-creation-form">
+                <div class="form-group">
+                    <label for="new-chore-name-input">Chore Name</label>
+                    <input type="text" id="new-chore-name-input" placeholder="Enter chore name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="chore-interval-value-input">Time Interval (Optional)</label>
+                    <div class="interval-inputs">
+                        <input type="number" id="chore-interval-value-input" min="1" placeholder="Interval" />
+                        <select id="chore-interval-unit-input">
+                            <option value="minutes">minutes</option>
+                            <option value="hours">hours</option>
+                            <option value="days">days</option>
+                        </select>
+                    </div>
+                    <small>Leave empty for no time requirement</small>
+                </div>
+
+                <div class="form-actions">
+                    <button id="confirm-create-chore-btn" class="primary">Create Chore</button>
+                    <button id="cancel-create-chore-btn" class="secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 
+            INVITE MEMBER VIEW
+            Dedicated view for inviting new members
+        -->
+        <div id="invite-member-view" class="view" style="display: none;">
+            <h2>Invite Member</h2>
+
+            <div id="invite-member-form">
+                <div class="form-group">
+                    <label for="invite-email-input">User Email</label>
+                    <input type="email" id="invite-email-input" placeholder="Enter user's email address" />
+                    <small>User must have a Google account</small>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="invite-as-admin-input" />
+                        Grant admin privileges
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button id="confirm-invite-btn" class="primary">Send Invite</button>
+                    <button id="generate-invite-code-btn" class="secondary">Generate Code</button>
+                    <button id="cancel-invite-btn" class="secondary">Cancel</button>
+                </div>
+            </div>
         </div>
     </main>
 

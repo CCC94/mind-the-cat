@@ -40,6 +40,81 @@ export async function createChore(groupId, choreName, intervalValue = null, inte
 }
 
 /**
+ * Updates a chore's name and interval without affecting history
+ * @param {string} groupId - The ID of the group containing the chore
+ * @param {string} choreId - The ID of the chore to update
+ * @param {string} newName - The new name for the chore
+ * @param {number} intervalValue - The new interval value (optional)
+ * @param {string} intervalUnit - The new interval unit (optional)
+ * @param {Object} user - The user object who is editing the chore
+ * @returns {Promise} - Promise that resolves when chore is updated
+ */
+export async function updateChore(groupId, choreId, newName, intervalValue = null, intervalUnit = null, user = null) {
+    console.log("🔧 updateChore called with:", { groupId, choreId, newName, intervalValue, intervalUnit, user: user ? { uid: user.uid, displayName: user.displayName } : null });
+
+    // Reference to the specific chore document
+    const choreRef = doc(db, "groups", groupId, "chores", choreId);
+
+    // Get current chore data to update history
+    const choreSnap = await getDoc(choreRef);
+    const currentData = choreSnap.data();
+
+    console.log("📄 Current chore data:", currentData);
+
+    // Create edit history entry
+    const editHistoryEntry = {
+        timestamp: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 },
+        type: "edit",
+        editedBy: user ? {
+            uid: user.uid,
+            displayName: user.displayName
+        } : {
+            uid: "unknown",
+            displayName: "Unknown user"
+        },
+        changes: {
+            oldName: currentData.name,
+            newName: newName,
+            oldIntervalValue: currentData.intervalValue,
+            newIntervalValue: intervalValue,
+            oldIntervalUnit: currentData.intervalUnit,
+            newIntervalUnit: intervalUnit
+        }
+    };
+
+    console.log("📝 New edit history entry:", editHistoryEntry);
+
+    // Prepare update data
+    const updateData = {
+        name: newName
+    };
+
+    // Add interval data if provided
+    if (intervalValue !== null && intervalUnit !== null) {
+        updateData.intervalValue = intervalValue;
+        updateData.intervalUnit = intervalUnit;
+    } else {
+        // Clear interval if not provided
+        updateData.intervalValue = null;
+        updateData.intervalUnit = null;
+    }
+
+    // Add to history array (initialize if it doesn't exist)
+    if (currentData.history) {
+        updateData.history = [...currentData.history, editHistoryEntry];
+        console.log("📚 Adding to existing history, new length:", updateData.history.length);
+    } else {
+        updateData.history = [editHistoryEntry];
+        console.log("📚 Creating new history array with 1 entry");
+    }
+
+    console.log("💾 Final update data:", updateData);
+
+    await updateDoc(choreRef, updateData);
+    console.log("✅ Chore updated successfully with edit history");
+}
+
+/**
  * Marks a chore as completed by the specified user
  * @param {string} groupId - The ID of the group containing the chore
  * @param {string} choreId - The ID of the chore to mark as done
@@ -47,17 +122,70 @@ export async function createChore(groupId, choreName, intervalValue = null, inte
  * @returns {Promise} - Promise that resolves when chore is updated
  */
 export async function markChoreDone(groupId, choreId, user) {
+    console.log("🔧 markChoreDone called with:", { groupId, choreId, user: { uid: user.uid, displayName: user.displayName } });
+
     // Reference to the specific chore document
     const choreRef = doc(db, "groups", groupId, "chores", choreId);
 
-    // Update the chore with completion information
-    await updateDoc(choreRef, {
-        lastDone: serverTimestamp(),  // Use server timestamp for accuracy
+    // Get current chore data to update history
+    const choreSnap = await getDoc(choreRef);
+    const currentData = choreSnap.data();
+
+    console.log("📄 Current chore data:", currentData);
+
+    // Create history entry with regular timestamp (not serverTimestamp for arrays)
+    const historyEntry = {
+        timestamp: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 },
         doneBy: {
-            uid: user.uid,            // User's unique ID
-            displayName: user.displayName  // User's display name
+            uid: user.uid,
+            displayName: user.displayName
         }
-    });
+    };
+
+    console.log("📝 New history entry:", historyEntry);
+
+    // Update the chore with completion information and add to history
+    const updateData = {
+        lastDone: serverTimestamp(), // Use serverTimestamp for the main lastDone field
+        doneBy: historyEntry.doneBy
+    };
+
+    // Add to history array (initialize if it doesn't exist)
+    if (currentData.history) {
+        updateData.history = [...currentData.history, historyEntry];
+        console.log("📚 Adding to existing history, new length:", updateData.history.length);
+    } else {
+        updateData.history = [historyEntry];
+        console.log("📚 Creating new history array with 1 entry");
+    }
+
+    console.log("💾 Final update data:", updateData);
+
+    await updateDoc(choreRef, updateData);
+    console.log("✅ Chore marked as done and history updated successfully");
+}
+
+/**
+ * Loads the completion history for a specific chore
+ * @param {string} groupId - The ID of the group containing the chore
+ * @param {string} choreId - The ID of the chore to load history for
+ * @returns {Promise<Array>} - Promise that resolves to an array of history entries
+ */
+export async function loadChoreHistory(groupId, choreId) {
+    try {
+        const choreRef = doc(db, "groups", groupId, "chores", choreId);
+        const choreSnap = await getDoc(choreRef);
+
+        if (!choreSnap.exists()) {
+            return [];
+        }
+
+        const choreData = choreSnap.data();
+        return choreData.history || [];
+    } catch (error) {
+        console.error("Error loading chore history:", error);
+        return [];
+    }
 }
 
 /**
