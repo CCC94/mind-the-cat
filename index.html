@@ -6,51 +6,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mind the Cat</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#ffb703" />
 </head>
 
 <body>
     <main>
-        <!-- Login View -->
+        <!-- 
+            LOGIN VIEW
+            The initial view where users authenticate with Google
+        -->
         <div id="login-view" class="view">
             <h1>Mind the Cat 🐱</h1>
             <button id="login-btn">Sign in with Google</button>
         </div>
 
-        <!-- Groups View -->
+        <!-- 
+            GROUPS VIEW
+            Displayed after login, shows user's groups and allows group creation/joining
+        -->
         <div id="groups-view" class="view" style="display: none;">
             <h2>Select or Create a Group</h2>
+
+            <!-- User controls -->
             <button id="logout-btn">Log out</button>
             <p id="user-info"></p>
 
+            <!-- Group creation and joining interface -->
             <div id="group-setup">
                 <input type="text" id="group-id-input" placeholder="Enter group ID" />
                 <button id="create-group-btn">Create Group</button>
                 <button id="join-group-btn">Join Group</button>
             </div>
 
+            <!-- Join group by code -->
+            <div id="join-code-section" style="margin-top: 1rem;">
+                <input type="text" id="join-code-input" placeholder="Enter invite code" />
+                <button id="join-code-btn">Join Group by Code</button>
+            </div>
+
+            <!-- List of user's existing groups -->
             <div id="group-list-container" style="margin-top: 20px;">
                 <h3>Your Groups:</h3>
-                <div id="group-list"></div>
+                <div id="group-list">
+                    <!-- Test group card to verify styling -->
+                    <div class="group-entry" style="display: none;">Test Group Card</div>
+                </div>
             </div>
         </div>
 
-        <!-- Chores View -->
+        <!-- 
+            CHORES VIEW
+            The main interface for managing chores within a selected group
+        -->
         <div id="chores-view" class="view" style="display: none;">
             <h2>Chores for <span id="current-group-label">No group selected</span></h2>
+
+            <!-- Navigation back to groups -->
             <button id="back-to-groups">← Back to Groups</button>
 
+            <!-- Chore creation interface -->
             <div id="chore-creation" style="margin-top: 20px;">
                 <input type="text" id="new-chore-name" placeholder="Enter chore name" />
+                <input type="number" id="chore-interval-value" min="1" placeholder="Interval"
+                    style="width: 70px; margin-left: 8px;" />
+                <select id="chore-interval-unit" style="margin-left: 4px;">
+                    <option value="minutes">minutes</option>
+                    <option value="hours">hours</option>
+                    <option value="days">days</option>
+                </select>
                 <button id="create-chore-btn">Create Chore</button>
             </div>
 
+            <!-- Member invitation interface (admin only) -->
+            <div id="invite-member" style="margin-top: 30px; display: none;">
+                <h3>Invite Member</h3>
+                <input type="text" id="invite-user-id" placeholder="User Email (Google Account)" />
+                <label><input type="checkbox" id="invite-as-admin" /> Admin</label>
+                <button id="invite-btn">Invite</button>
+                <hr style="margin: 1rem 0;">
+                <button id="generate-invite-code-btn">Generate Invite Code</button>
+            </div>
+
+            <!-- Group members list -->
+            <div id="member-list" style="margin-top: 30px;">
+                <h3>Members</h3>
+                <ul id="member-list-ul"></ul>
+            </div>
+
+            <!-- Chores list - dynamically populated -->
             <div id="chore-list" style="margin-top: 20px;"></div>
         </div>
     </main>
 
+    <!-- 
+        SCRIPT IMPORTS
+        Load modules in dependency order:
+        1. auth.js - Authentication and user management
+        2. group.js - Group operations and permissions
+        3. script.js - Main UI logic and event handlers
+    -->
     <script type="module" src="auth.js"></script>
     <script type="module" src="group.js"></script>
     <script type="module" src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
 </body>
 
 </html>
