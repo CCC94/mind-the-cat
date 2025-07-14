@@ -491,6 +491,8 @@ h1 {
     animation: pulse-overdue 2s infinite !important;
     /* Pulsing animation */
     position: relative !important;
+    color: #1a0a0a !important;
+    /* very dark, readable text for all content */
 }
 
 .overdue-chore::before {
@@ -619,18 +621,29 @@ h1 {
 
 /* Overdue text styling */
 .overdue-chore .chore-name {
-    color: #FFB7B2 !important;
+    color: #b3001b !important;
     font-weight: bold !important;
+    /* font-size: 1.1rem; */
+}
+
+.overdue-chore .chore-main-info small,
+.overdue-chore .progress-text,
+.overdue-chore .chore-actions button,
+.overdue-chore small {
+    color: #b3001b !important;
+    /* font-size: 1rem !important; */
+    font-weight: normal !important;
 }
 
 .overdue-chore .chore-main-info small {
-    color: #FFB7B2 !important;
-    font-weight: 500 !important;
+    color: #b3001b !important;
+    font-size: 0.95rem !important;
+    font-weight: normal !important;
 }
 
 /* Overdue group text styling */
 .overdue-group p {
-    color: #FFB7B2 !important;
+    color: #3a0602 !important;
     font-weight: bold !important;
 }
 
@@ -727,13 +740,13 @@ h1 {
 }
 
 .overdue-chore .progress-fill {
-    background: linear-gradient(90deg, #FFB7B2, #E8F9FF);
+    background: linear-gradient(90deg, #410601, #E8F9FF);
     width: 0% !important;
     animation: pulse-empty 2s infinite;
 }
 
 .overdue-chore .progress-text {
-    color: #FFB7B2;
+    color: #83150d;
     font-weight: bold;
 }
 
@@ -1367,6 +1380,53 @@ h1 {
     }
 }
 
+@media (max-width: 600px) {
+
+    main,
+    .view {
+        padding-top: 2.5rem !important;
+    }
+}
+
 /* ==========================================================================
    CHORE ACTIONS
    ========================================================================== */
+
+.overdue-chore .overdue-text {
+    color: #b3001b !important;
+    /* deep red */
+    font-weight: bold;
+    font-size: 1.05rem;
+    background: rgba(255, 183, 178, 0.25);
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 4px;
+    text-shadow: 0 1px 2px #fff, 0 0 2px #fff;
+}
+
+.overdue-chore {
+    border-left: 6px solid #FFB7B2 !important;
+    /* Soft coral border */
+    background: linear-gradient(135deg, #E8F9FF 0%, #FFB7B2 100%) !important;
+    /* Gradient sky to coral background */
+    box-shadow: 0 4px 12px rgba(255, 183, 178, 0.3) !important;
+    /* Soft coral shadow */
+    animation: pulse-overdue 2s infinite !important;
+    /* Pulsing animation */
+    position: relative !important;
+    color: #470303 !important;
+    /* very dark, readable text for all content */
+}
+
+/* Remove all color overrides for overdue-chore and its children */
+/* .overdue-chore .chore-name,
+.overdue-chore .chore-main-info,
+.overdue-chore .progress-text,
+.overdue-chore .chore-actions button,
+.overdue-chore .overdue-text,
+.overdue-chore small,
+.overdue-chore,
+.overdue-chore * {
+    color: unset !important;
+} */
