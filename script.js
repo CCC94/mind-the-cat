@@ -15,6 +15,7 @@
 import { createChore, markChoreDone, loadChores, deleteChore, updateChore } from "./chores.js";
 import { createGroup, deleteGroup } from "./group.js";
 import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 /**
  * Splash Screen Management
@@ -673,11 +674,20 @@ function renderChores(chores) {
                     </div>
                 `;
 
+                // Add event listener for mute/activate button
+                div.querySelector('.mute-chore-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentlyMuted = isChoreMuted(chore.id);
+                    setChoreMuted(chore.id, !currentlyMuted);
+                    renderChores(chores); // re-render to update icon
+                });
+
                 // Add click handler to the entire chore card for single chore view
                 div.addEventListener("click", (e) => {
                     // Don't trigger if clicking on buttons
                     if (e.target.classList.contains('mark-done-btn') ||
-                        e.target.classList.contains('delete-chore-btn')) {
+                        e.target.classList.contains('delete-chore-btn') ||
+                        e.target.classList.contains('mute-chore-btn')) {
                         return;
                     }
 
@@ -721,24 +731,15 @@ function renderChores(chores) {
                     }
                 }
 
-                // Add event listener for mute/activate button
-                div.querySelector('.mute-chore-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const currentlyMuted = isChoreMuted(chore.id);
-                    setChoreMuted(chore.id, !currentlyMuted);
-                    renderChores(chores); // re-render to update icon
-                });
-
                 container.appendChild(div);
             });
 
             // Update the group overdue badge after rendering chores
             updateGroupOverdueBadge(groupId);
+            checkAndNotifyOverdueChores(chores); // Notify overdue chores after rendering
             isRenderingChores = false;
         });
     });
-    checkAndNotifyOverdueChores(chores);
-    isRenderingChores = false;
 }
 
 /**
@@ -1831,10 +1832,11 @@ async function requestNotificationPermission() {
 }
 
 function notifyOverdueChores(count) {
+    console.log('notifyOverdueChores called with count:', count);
     if ('Notification' in window && Notification.permission === 'granted' && count > 0) {
         new Notification('Mind the Cat', {
             body: `You have ${count} overdue chore${count > 1 ? 's' : ''}!`,
-            icon: 'icon-192.png' // Use your PWA icon
+            icon: 'icon-192.png'
         });
     }
 }
@@ -1849,6 +1851,7 @@ function setChoreMuted(choreId, muted) {
     localStorage.setItem(`mute-chore-${choreId}`, muted ? 'true' : 'false');
 }
 
+// Update notification logic to only notify for unmuted chores
 function checkAndNotifyOverdueChores(chores) {
     const overdueCount = chores.filter(chore => isChoreOverdue(chore) && !isChoreMuted(chore.id)).length;
     notifyOverdueChores(overdueCount);
