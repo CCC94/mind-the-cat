@@ -42,6 +42,19 @@ function initializeSplashScreen() {
 // Initialize splash screen when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeSplashScreen();
+
+    // Invite code modal close and copy logic
+    const closeBtn = document.getElementById("close-invite-code-modal");
+    if (closeBtn) closeBtn.onclick = hideInviteCodeModal;
+    const copyBtn = document.getElementById("copy-invite-code-btn");
+    if (copyBtn) copyBtn.onclick = function () {
+        const input = document.getElementById("invite-code-input");
+        input.select();
+        input.setSelectionRange(0, 9999); // For mobile
+        document.execCommand('copy');
+        this.textContent = "Copied!";
+        setTimeout(() => { this.textContent = "Copy Code"; }, 1500);
+    };
 });
 
 /**
@@ -277,7 +290,8 @@ document.getElementById("confirm-invite-btn").addEventListener("click", async ()
         await setDoc(doc(collection(db, "groupInvites"), code), inviteData);
         console.log("✅ Successfully stored invite code in Firestore!");
 
-        alert(`Invite code for ${email}:\n\n${code}\n\nShare this code with the user. It is valid for 24 hours and can only be used once.`);
+        // Show modal with code
+        showInviteCodeModal(code);
 
         // Clear input fields and go back to chores view
         document.getElementById("invite-email-input").value = "";
@@ -319,7 +333,8 @@ document.getElementById("generate-invite-code-btn").addEventListener("click", as
         await setDoc(doc(collection(db, "groupInvites"), code), inviteData);
         console.log("✅ Successfully stored invite code in Firestore!");
 
-        alert(`Invite code generated:\n\n${code}\n\nShare this code with the user. It is valid for 24 hours and can only be used once.`);
+        // Show modal with code
+        showInviteCodeModal(code);
     } catch (error) {
         console.error("❌ Error in generate invite code:", error);
         alert("Failed to generate invite code: " + error.message);
@@ -554,6 +569,11 @@ function renderChores(chores) {
                 const div = document.createElement("div");
                 div.className = "chore";
 
+                // Mute state
+                const muted = isChoreMuted(chore.id);
+                const bellIcon = muted ? '🔕' : '🔔';
+                const bellTitle = muted ? 'Notifications muted for this chore' : 'Notifications active for this chore';
+
                 // Format the last done timestamp for display
                 const lastDoneText = chore.lastDone
                     ? formatRelativeTime(chore.lastDone.seconds * 1000)
@@ -602,15 +622,23 @@ function renderChores(chores) {
                     }
                     const nextDue = chore.lastDone.seconds * 1000 + intervalMs;
                     const overdueMs = Date.now() - nextDue;
-                    const overdueHours = Math.floor(overdueMs / (1000 * 60 * 60));
                     const overdueDays = Math.floor(overdueMs / (1000 * 60 * 60 * 24));
-
+                    const overdueHours = Math.floor((overdueMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const overdueMinutes = Math.floor((overdueMs % (1000 * 60 * 60)) / (1000 * 60));
                     if (overdueDays > 0) {
-                        overdueText = `⚠️ Overdue by ${overdueDays} day${overdueDays > 1 ? 's' : ''}`;
+                        overdueText = `Overdue by ${overdueDays} day${overdueDays > 1 ? 's' : ''}`;
+                        if (overdueHours > 0) {
+                            overdueText += ` and ${overdueHours} hour${overdueHours > 1 ? 's' : ''}`;
+                        }
                     } else if (overdueHours > 0) {
-                        overdueText = `⚠️ Overdue by ${overdueHours} hour${overdueHours > 1 ? 's' : ''}`;
+                        overdueText = `Overdue by ${overdueHours} hour${overdueHours > 1 ? 's' : ''}`;
+                        if (overdueMinutes > 0) {
+                            overdueText += ` and ${overdueMinutes} minute${overdueMinutes > 1 ? 's' : ''}`;
+                        }
+                    } else if (overdueMinutes > 0) {
+                        overdueText = `Overdue by ${overdueMinutes} minute${overdueMinutes > 1 ? 's' : ''}`;
                     } else {
-                        overdueText = "⚠️ Overdue";
+                        overdueText = "Overdue";
                     }
                 }
 
@@ -632,12 +660,12 @@ function renderChores(chores) {
                 ` : '';
 
                 div.innerHTML = `
-                    <div class="chore-header">
+                    <div class="chore-header" style="position: relative;">
                         <span class="chore-name">${chore.name}${overdue ? ' 🔴' : ''}</span>
+                        <button class="mute-chore-btn" title="${bellTitle}" data-chore-id="${chore.id}" style="position: absolute; top: 0; right: 0; background: none; border: none; font-size: 1.2rem; cursor: pointer;">${bellIcon}</button>
                     </div>
                     <div class="chore-main-info">
                         <small>${chore.doneBy?.displayName || 'Unknown'} ${lastDoneText}</small>
-                        ${overdueText ? `<br/><small style="color: #dc3545; font-weight: bold;">${overdueText}</small>` : ''}
                     </div>
                     ${progressBar}
                     <div class="chore-actions">
@@ -693,6 +721,14 @@ function renderChores(chores) {
                     }
                 }
 
+                // Add event listener for mute/activate button
+                div.querySelector('.mute-chore-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentlyMuted = isChoreMuted(chore.id);
+                    setChoreMuted(chore.id, !currentlyMuted);
+                    renderChores(chores); // re-render to update icon
+                });
+
                 container.appendChild(div);
             });
 
@@ -701,6 +737,8 @@ function renderChores(chores) {
             isRenderingChores = false;
         });
     });
+    checkAndNotifyOverdueChores(chores);
+    isRenderingChores = false;
 }
 
 /**
@@ -1174,6 +1212,23 @@ function generateInviteCode(length = 10) {
 }
 
 /**
+ * Helper to show the invite code modal
+ */
+function showInviteCodeModal(code) {
+    const modal = document.getElementById("invite-code-modal");
+    const input = document.getElementById("invite-code-input");
+    input.value = code;
+    modal.style.display = "flex";
+}
+
+/**
+ * Helper to hide the invite code modal
+ */
+function hideInviteCodeModal() {
+    document.getElementById("invite-code-modal").style.display = "none";
+}
+
+/**
  * Renders the list of group members
  * @param {Array} memberEntries - Array of [uid, memberInfo] pairs
  */
@@ -1240,6 +1295,7 @@ document.addEventListener("user-ready", async (e) => {
     }).catch(err => {
         console.error("❌ Error loading group module:", err);
     });
+    await requestNotificationPermission();
 });
 
 /**
@@ -1515,19 +1571,6 @@ function testFirebasePermissions() {
     });
 }
 
-// Add test button to the UI (temporary for debugging)
-document.addEventListener("DOMContentLoaded", () => {
-    // Add a test button to the chores view
-    const testBtn = document.createElement("button");
-    testBtn.textContent = "🧪 Test Permissions";
-    testBtn.style.position = "fixed";
-    testBtn.style.top = "10px";
-    testBtn.style.right = "10px";
-    testBtn.style.zIndex = "1000";
-    testBtn.addEventListener("click", testFirebasePermissions);
-    document.body.appendChild(testBtn);
-});
-
 /**
  * Event handler for deleting the current group
  * Only visible to group admins
@@ -1780,3 +1823,33 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
         showView("login-view");
     });
 });
+
+async function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+        await Notification.requestPermission();
+    }
+}
+
+function notifyOverdueChores(count) {
+    if ('Notification' in window && Notification.permission === 'granted' && count > 0) {
+        new Notification('Mind the Cat', {
+            body: `You have ${count} overdue chore${count > 1 ? 's' : ''}!`,
+            icon: 'icon-192.png' // Use your PWA icon
+        });
+    }
+}
+
+// Helper: get mute state for a chore
+function isChoreMuted(choreId) {
+    return localStorage.getItem(`mute-chore-${choreId}`) === 'true';
+}
+
+// Helper: set mute state for a chore
+function setChoreMuted(choreId, muted) {
+    localStorage.setItem(`mute-chore-${choreId}`, muted ? 'true' : 'false');
+}
+
+function checkAndNotifyOverdueChores(chores) {
+    const overdueCount = chores.filter(chore => isChoreOverdue(chore) && !isChoreMuted(chore.id)).length;
+    notifyOverdueChores(overdueCount);
+}
