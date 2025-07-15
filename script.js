@@ -295,8 +295,10 @@ document.getElementById("confirm-invite-btn").addEventListener("click", async ()
         showInviteCodeModal(code);
 
         // Clear input fields and go back to chores view
-        document.getElementById("invite-email-input").value = "";
-        document.getElementById("invite-as-admin-input").checked = false;
+        const emailInput = document.getElementById("invite-email-input");
+        if (emailInput) emailInput.value = "";
+        const adminInput = document.getElementById("invite-as-admin-input");
+        if (adminInput) adminInput.checked = false;
         showView("chores-view");
     } catch (error) {
         console.error("❌ Error in invite by email:", error);
@@ -347,8 +349,10 @@ document.getElementById("generate-invite-code-btn").addEventListener("click", as
  */
 document.getElementById("cancel-invite-btn").addEventListener("click", () => {
     // Clear input fields
-    document.getElementById("invite-email-input").value = "";
-    document.getElementById("invite-as-admin-input").checked = false;
+    const emailInput = document.getElementById("invite-email-input");
+    if (emailInput) emailInput.value = "";
+    const adminInput = document.getElementById("invite-as-admin-input");
+    if (adminInput) adminInput.checked = false;
     showView("chores-view");
 });
 
