@@ -1388,6 +1388,24 @@ h1 {
     }
 }
 
+/* Make the group list scrollable if it overflows */
+#group-list-container {
+    max-height: 60vh;
+    /* or adjust as needed */
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+/* Ensure the main view is scrollable on mobile */
+@media (max-width: 600px) {
+
+    main,
+    .view {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
 /* ==========================================================================
    CHORE ACTIONS
    ========================================================================== */
