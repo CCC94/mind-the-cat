@@ -35,49 +35,4 @@ setGlobalOptions({ maxInstances: 10 });
 //   response.send("Hello from Firebase!");
 // });
 
-exports.sendOverdueChoreNotifications = functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {
-    const db = admin.firestore();
 
-    // 1. Query all groups and chores
-    const groupsSnapshot = await db.collection('groups').get();
-    for (const groupDoc of groupsSnapshot.docs) {
-        const groupId = groupDoc.id;
-        const choresSnapshot = await db.collection('groups').doc(groupId).collection('chores').get();
-
-        for (const choreDoc of choresSnapshot.docs) {
-            const chore = choreDoc.data();
-            // 2. Check if the chore is overdue (implement your logic here)
-            if (isChoreOverdue(chore)) {
-                // 3. Get the user(s) to notify (e.g., all group members)
-                const groupData = groupDoc.data();
-                for (const memberId in groupData.members) {
-                    // 4. Get the member's FCM token
-                    const userDoc = await db.collection('users').doc(memberId).get();
-                    const fcmToken = userDoc.data().fcmToken;
-                    if (fcmToken) {
-                        // 5. Send the notification
-                        await admin.messaging().send({
-                            token: fcmToken,
-                            notification: {
-                                title: 'Chore Overdue!',
-                                body: `The chore "${chore.name}" is overdue in your group.`
-                            }
-                        });
-                    }
-                }
-            }
-        }
-    }
-    return null;
-});
-
-// Helper function (implement your own logic)
-function isChoreOverdue(chore) {
-    if (!chore.lastDone || !chore.intervalValue || !chore.intervalUnit) return false;
-    const lastDone = chore.lastDone._seconds * 1000;
-    let intervalMs = 0;
-    if (chore.intervalUnit === "minutes") intervalMs = chore.intervalValue * 60 * 1000;
-    if (chore.intervalUnit === "hours") intervalMs = chore.intervalValue * 60 * 60 * 1000;
-    if (chore.intervalUnit === "days") intervalMs = chore.intervalValue * 24 * 60 * 60 * 1000;
-    return Date.now() > lastDone + intervalMs;
-}

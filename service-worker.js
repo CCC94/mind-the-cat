@@ -7,9 +7,7 @@ const urlsToCache = [
     '/auth.js',
     '/group.js',
     '/chores.js',
-    '/manifest.json',
-    '/cat-icon-192.png',
-    '/cat-icon-512.png'
+    '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
