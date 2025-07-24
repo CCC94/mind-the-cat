@@ -791,6 +791,9 @@ h1 {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 1rem;
 }
 
 #group-list {
@@ -1366,9 +1369,17 @@ h1 {
 
 /* Responsive modal */
 @media (max-width: 600px) {
+    .modal {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 20vh;
+    }
+
     .modal-content {
-        width: 95%;
-        margin: 10px;
+        width: 100%;
+        margin: 0;
+        max-height: 60vh;
+        border-radius: 12px;
     }
 
     .modal-header {
@@ -1377,6 +1388,25 @@ h1 {
 
     .modal-body {
         padding: 1rem;
+    }
+
+    #invite-code-input {
+        font-size: 1.2rem !important;
+        padding: 0.8rem;
+        border: 2px solid #D4F6FF;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        user-select: all;
+        -webkit-user-select: all;
+        -moz-user-select: all;
+        -ms-user-select: all;
+    }
+
+    #invite-code-input:focus {
+        outline: none;
+        border-color: #A8E6CF;
+        box-shadow: 0 0 0 2px rgba(168, 230, 207, 0.3);
     }
 }
 
@@ -1388,13 +1418,7 @@ h1 {
     }
 }
 
-/* Make the group list scrollable if it overflows */
-#group-list-container {
-    max-height: 60vh;
-    /* or adjust as needed */
-    overflow-y: auto;
-    margin-bottom: 1rem;
-}
+
 
 /* Ensure the main view is scrollable on mobile */
 @media (max-width: 600px) {

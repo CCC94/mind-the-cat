@@ -15,7 +15,7 @@
 import { createChore, markChoreDone, loadChores, deleteChore, updateChore } from "./chores.js";
 import { createGroup, deleteGroup } from "./group.js";
 import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
 
 /**
  * Splash Screen Management
@@ -47,14 +47,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // Invite code modal close and copy logic
     const closeBtn = document.getElementById("close-invite-code-modal");
     if (closeBtn) closeBtn.onclick = hideInviteCodeModal;
+
+    // Close modal when clicking outside (mobile-friendly)
+    const modal = document.getElementById("invite-code-modal");
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                hideInviteCodeModal();
+            }
+        });
+    }
+
     const copyBtn = document.getElementById("copy-invite-code-btn");
-    if (copyBtn) copyBtn.onclick = function () {
+    if (copyBtn) copyBtn.onclick = async function () {
         const input = document.getElementById("invite-code-input");
-        input.select();
-        input.setSelectionRange(0, 9999); // For mobile
-        document.execCommand('copy');
-        this.textContent = "Copied!";
-        setTimeout(() => { this.textContent = "Copy Code"; }, 1500);
+        const code = input.value;
+
+        try {
+            // Try modern Clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(code);
+                this.textContent = "Copied!";
+                setTimeout(() => { this.textContent = "Copy Code"; }, 1500);
+            } else {
+                // Fallback for older browsers or non-HTTPS
+                input.select();
+                input.setSelectionRange(0, 9999);
+                document.execCommand('copy');
+                this.textContent = "Copied!";
+                setTimeout(() => { this.textContent = "Copy Code"; }, 1500);
+            }
+        } catch (error) {
+            console.error('Failed to copy:', error);
+            // Fallback: show the code prominently and ask user to copy manually
+            this.textContent = "Tap to select";
+            input.style.fontSize = "1.5rem";
+            input.style.fontWeight = "bold";
+            input.style.backgroundColor = "#E8F9FF";
+            input.select();
+            setTimeout(() => {
+                this.textContent = "Copy Code";
+                input.style.fontSize = "1.3rem";
+                input.style.fontWeight = "normal";
+                input.style.backgroundColor = "white";
+            }, 2000);
+        }
     };
 });
 
@@ -313,7 +350,10 @@ document.getElementById("generate-invite-code-btn").addEventListener("click", as
     try {
         console.log("🔧 Starting generate invite code process...");
         const groupId = localStorage.getItem("groupId");
-        if (!groupId) return alert("No group selected.");
+        if (!groupId) {
+            alert("No group selected. Please select a group first.");
+            return;
+        }
 
         const isAdmin = document.getElementById("invite-as-admin-input").checked;
         const code = generateInviteCode(8);
@@ -322,6 +362,7 @@ document.getElementById("generate-invite-code-btn").addEventListener("click", as
         console.log("📝 Generate code details:", { groupId, isAdmin, code });
         console.log("⏰ Expires at:", new Date(expiresAt).toLocaleString());
 
+        const { getFirestore, doc, setDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
         const db = getFirestore();
         console.log("🔥 Storing in Firestore...");
 
@@ -340,7 +381,18 @@ document.getElementById("generate-invite-code-btn").addEventListener("click", as
         showInviteCodeModal(code);
     } catch (error) {
         console.error("❌ Error in generate invite code:", error);
-        alert("Failed to generate invite code: " + error.message);
+
+        // Provide more specific error messages
+        let errorMessage = "Failed to generate invite code.";
+        if (error.code === 'permission-denied') {
+            errorMessage = "You don't have permission to generate invite codes for this group.";
+        } else if (error.code === 'unavailable') {
+            errorMessage = "Network error. Please check your connection and try again.";
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        alert(errorMessage);
     }
 });
 
@@ -574,10 +626,7 @@ function renderChores(chores) {
                 const div = document.createElement("div");
                 div.className = "chore";
 
-                // Mute state
-                const muted = isChoreMuted(chore.id);
-                const bellIcon = muted ? '🔕' : '🔔';
-                const bellTitle = muted ? 'Notifications muted for this chore' : 'Notifications active for this chore';
+
 
                 // Format the last done timestamp for display
                 const lastDoneText = chore.lastDone
@@ -667,7 +716,6 @@ function renderChores(chores) {
                 div.innerHTML = `
                     <div class="chore-header" style="position: relative;">
                         <span class="chore-name">${chore.name}${overdue ? ' 🔴' : ''}</span>
-                        <button class="mute-chore-btn" title="${bellTitle}" data-chore-id="${chore.id}" style="position: absolute; top: 0; right: 0; background: none; border: none; font-size: 1.2rem; cursor: pointer;">${bellIcon}</button>
                     </div>
                     <div class="chore-main-info">
                         <small>${chore.doneBy?.displayName || 'Unknown'} ${lastDoneText}</small>
@@ -678,20 +726,13 @@ function renderChores(chores) {
                     </div>
                 `;
 
-                // Add event listener for mute/activate button
-                div.querySelector('.mute-chore-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const currentlyMuted = isChoreMuted(chore.id);
-                    setChoreMuted(chore.id, !currentlyMuted);
-                    renderChores(chores); // re-render to update icon
-                });
+
 
                 // Add click handler to the entire chore card for single chore view
                 div.addEventListener("click", (e) => {
                     // Don't trigger if clicking on buttons
                     if (e.target.classList.contains('mark-done-btn') ||
-                        e.target.classList.contains('delete-chore-btn') ||
-                        e.target.classList.contains('mute-chore-btn')) {
+                        e.target.classList.contains('delete-chore-btn')) {
                         return;
                     }
 
@@ -740,7 +781,6 @@ function renderChores(chores) {
 
             // Update the group overdue badge after rendering chores
             updateGroupOverdueBadge(groupId);
-            checkAndNotifyOverdueChores(chores); // Notify overdue chores after rendering
             isRenderingChores = false;
         });
     });
@@ -1222,8 +1262,21 @@ function generateInviteCode(length = 10) {
 function showInviteCodeModal(code) {
     const modal = document.getElementById("invite-code-modal");
     const input = document.getElementById("invite-code-input");
+
+    if (!modal || !input) {
+        console.error("Modal elements not found");
+        alert("Error: Could not show invite code modal");
+        return;
+    }
+
     input.value = code;
     modal.style.display = "flex";
+
+    // Focus the input for better mobile experience
+    setTimeout(() => {
+        input.focus();
+        input.select();
+    }, 100);
 }
 
 /**
@@ -1300,7 +1353,6 @@ document.addEventListener("user-ready", async (e) => {
     }).catch(err => {
         console.error("❌ Error loading group module:", err);
     });
-    await requestNotificationPermission();
 });
 
 /**
@@ -1829,34 +1881,4 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
     });
 });
 
-async function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission !== 'granted') {
-        await Notification.requestPermission();
-    }
-}
 
-function notifyOverdueChores(count) {
-    console.log('notifyOverdueChores called with count:', count);
-    if ('Notification' in window && Notification.permission === 'granted' && count > 0) {
-        new Notification('Mind the Cat', {
-            body: `You have ${count} overdue chore${count > 1 ? 's' : ''}!`,
-            icon: 'icon-192.png'
-        });
-    }
-}
-
-// Helper: get mute state for a chore
-function isChoreMuted(choreId) {
-    return localStorage.getItem(`mute-chore-${choreId}`) === 'true';
-}
-
-// Helper: set mute state for a chore
-function setChoreMuted(choreId, muted) {
-    localStorage.setItem(`mute-chore-${choreId}`, muted ? 'true' : 'false');
-}
-
-// Update notification logic to only notify for unmuted chores
-function checkAndNotifyOverdueChores(chores) {
-    const overdueCount = chores.filter(chore => isChoreOverdue(chore) && !isChoreMuted(chore.id)).length;
-    notifyOverdueChores(overdueCount);
-}
